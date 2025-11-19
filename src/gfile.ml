@@ -111,4 +111,16 @@ let from_file path =
   
   close_in infile ;
   final_graph
-  
+
+let export (p: path) (g: string graph) : unit =
+    let ff = open_out p in
+    let string_arc = e_fold g (fun acc arc -> acc^(Printf.sprintf "         %d -> %d [label = \"%s\"];\n" arc.src arc.tgt arc.lbl)) "" in
+    fprintf ff
+    "digraph finite_state_machine {\n
+        fontname=\"Helvetica,Arial,sans-serif\"
+        node [fontname=\"Helvetica,Arial,sans-serif\"]
+        edge [fontname=\"Helvetica,Arial,sans-serif\"]
+        rankdir=LR;
+        node [shape = circle];
+        %s
+     }" string_arc

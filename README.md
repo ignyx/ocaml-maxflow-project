@@ -20,3 +20,12 @@ A [`Makefile`](Makefile) provides some useful commands:
 
 In case of trouble with the VSCode extension (e.g. the project does not build, there are strange mistakes), a common workaround is to (1) close vscode, (2) `make clean`, (3) `make build` and (4) reopen vscode (`make edit`).
 
+## Graphviz :
+
+```bash
+dot path/to/graphviz.txt -T > out.png
+```
+
+```bash
+open out.png
+```
