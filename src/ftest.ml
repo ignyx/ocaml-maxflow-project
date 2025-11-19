@@ -38,4 +38,5 @@ let () =
   let output_string_graph = gmap modified_graph string_of_int in
   let () = write_file outfile output_string_graph in
 
+  (* let () = export outfile graph in *)
   ()
