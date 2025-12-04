@@ -1,5 +1,7 @@
 open Gfile
 open Tools
+open Graph
+open Dfs
     
 let () =
 
@@ -38,5 +40,14 @@ let () =
   let output_string_graph = gmap modified_graph string_of_int in
   let () = write_file outfile output_string_graph in
 
-  (* let () = export outfile graph in *)
-  ()
+  (*Dfs TESTS*)
+
+  let shortest_path = dfs graph _source _sink in
+  let display (path: 'a arc list option) = match path with
+    | None -> Printf.printf "no path found"
+    | Some arcs ->
+        let rec aux (arcs: 'a arc list) = match arcs with
+            | [] -> ()
+            | h::t -> Printf.printf "%d--(%s)-->%d/" h.src h.lbl h.tgt; aux t
+        in aux arcs
+    in display shortest_path ;;
