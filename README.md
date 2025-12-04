@@ -23,7 +23,7 @@ In case of trouble with the VSCode extension (e.g. the project does not build, t
 ## Graphviz :
 
 ```bash
-dot path/to/graphviz.txt -T > out.png
+dot path/to/graphviz.txt -Tpng > out.png
 ```
 
 ```bash
