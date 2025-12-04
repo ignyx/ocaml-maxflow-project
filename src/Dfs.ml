@@ -10,10 +10,10 @@ let rec contains (l: 'a list) (e: 'a )=
 let dfs (gr: 'a graph) (s: id) (e: id) : 'a arc list option =
     (* adds "if exist s and e"*)
     let visited = [] in
-    let rec find_path (i: id): 'a arc list option =
+    let rec find_path (visited: id list) (i: id): 'a arc list option =
         let neighbors_arcs = out_arcs gr i in
         (* browses every neighbor to find a path to 'e' *)
-        let rec browse_neigh (acc: id list) (neigh: 'a arc list) : 'a arc list option =
+        let rec browse_neigh (neigh: 'a arc list) : 'a arc list option =
             match neigh with
                 | [] -> None
                 | next_arc::r ->
@@ -27,14 +27,14 @@ let dfs (gr: 'a graph) (s: id) (e: id) : 'a arc list option =
                     else
                     begin
                         (* finds a path from 'next_arc.tgt' to 'e'*)
-                        let path_to_the_end = find_path next_arc.tgt in
+                        let path_to_the_end = find_path (next_arc.tgt::visited) next_arc.tgt in
                         match path_to_the_end with
-                             | None -> browse_neigh (next_arc.tgt::acc) r
+                             | None -> browse_neigh r
                              | Some path -> Some (next_arc::path)
                     end
                 end
-        in browse_neigh visited neighbors_arcs
-    in find_path s
+        in browse_neigh neighbors_arcs
+    in find_path visited s
 
 
 
