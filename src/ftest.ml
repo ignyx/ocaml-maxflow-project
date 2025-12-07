@@ -43,7 +43,7 @@ let () =
   (*Dfs TESTS*)
   let () = export "out.txt" graph in
 
-  let shortest_path = dfs graph _source _sink in
+  let shortest_path = dfs graph [] _source _sink in
   let display (path: 'a arc list option) = match path with
     | None -> Printf.printf "no path found"
     | Some arcs ->

@@ -1,41 +1,17 @@
 open Graph
 
-
-(* Takes a list and a element and returns true if list contains e*)
-let rec contains (l: 'a list) (e: 'a )=
-    match l with
-    | a::b -> if a = e then true else contains b e
-    |[] -> false
-
-let dfs (gr: 'a graph) (s: id) (e: id) : 'a arc list option =
-    (* adds "if exist s and e"*)
-    let visited = [] in
-    let rec find_path (visited: id list) (i: id): 'a arc list option =
-        let neighbors_arcs = out_arcs gr i in
-        (* browses every neighbor to find a path to 'e' *)
-        let rec browse_neigh (neigh: 'a arc list) : 'a arc list option =
-            match neigh with
-                | [] -> None
-                | next_arc::r ->
-                begin
-                    if(contains visited next_arc.tgt) then
-                        (* already visited*)
-                        None
-                    else if(next_arc.tgt = e) then
-                        (* target 'e' reached*)
-                        Some [next_arc]
-                    else
-                    begin
-                        (* finds a path from 'next_arc.tgt' to 'e'*)
-                        let path_to_the_end = find_path (next_arc.tgt::visited) next_arc.tgt in
-                        match path_to_the_end with
-                             | None -> browse_neigh r
-                             | Some path -> Some (next_arc::path)
-                    end
-                end
-        in browse_neigh neighbors_arcs
-    in find_path visited s
-
-
-
-
+let rec dfs (gr : 'a graph) (visited : id list) (src : id) (tgt : id) :
+    'a arc list option =
+  if src = tgt then Some []
+  else
+    let path_from_neighbor arc =
+      (* omit already visited nodes *)
+      if List.mem arc.tgt visited then None
+      else
+        (* try to find a path from each neighbor to tgt *)
+        match dfs gr (src :: visited) arc.tgt tgt with
+        | None -> None
+        (* when successful, prepend current arc *)
+        | Some path -> Some (arc :: path)
+    in
+    List.find_map path_from_neighbor (out_arcs gr src)
