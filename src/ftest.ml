@@ -2,6 +2,8 @@ open Gfile
 open Tools
 open Graph
 open Dfs
+open Dijkstra
+open Graph
     
 let () =
 
@@ -51,8 +53,24 @@ let () =
             | [] -> ()
             | h::t -> Printf.printf "%d--(%s)-->%d/" h.src h.lbl h.tgt; aux t
         in aux arcs
-  in display shortest_path
+  in 
+  let () = display shortest_path
 
 
 
 
+  (*Djistra test *)
+  let () = export outfile graph in
+  let () =
+    let min_path = dijkstra int_graph _source _sink in
+    match min_path with
+     | None -> Printf.printf "No path form Dijkstra"
+     | Some path ->
+            let rec print_arcs (arcs:'a arc list) = match arcs with
+                |[]->()
+                | a::b -> Printf.printf "%d--(%d)-->%d | " a.src a.lbl a.tgt; print_arcs b
+               in
+               print_arcs path
+       in
+
+  ()
