@@ -4,9 +4,8 @@ type flow_cost_arc_lbl = { capacity : int; flow : int; cost : int }
 (* TODO use above type in PCC algo, and rebuild at end once (instead of every time) *)
 
 (* `get_min_flow_increase path` calculates the minimum possible flow increase along this `path`. *)
-(* TODO refactor with sibling function ? *)
 let get_max_flow_increase gap_path =
-  let gaps = List.map (fun arc -> arc.lbl) gap_path in
+  let gaps = List.map (fun arc -> arc.lbl.capacity - arc.lbl.flow) gap_path in
   let initial = match gaps with [] -> 0 | x :: _ -> x in
   List.fold_left min initial gaps
 
