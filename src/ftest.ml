@@ -5,6 +5,7 @@ open Dfs
 open Dijkstra
 open Bellmanford
 open Max_flow
+open Max_flow_min_cost
 
 let () =
   (* Check the number of command-line arguments *)
@@ -98,6 +99,21 @@ let () =
   in
   let () =
     export "out-ff.txt" labeled_graph;
-    Printf.printf "Output Ford-Fulkerson graphviz to out-ff.txt"
+    Printf.printf "Output Ford-Fulkerson graphviz to out-ff.txt\n"
+  in
+
+  (* Busacker-Gowen *)
+  let input_graph =
+    (* TODO use a smarter input *)
+    gmap int_graph (fun i -> { capacity = i; flow = 0; cost = i })
+  in
+  let flow_cost_graph = busacker_gowen input_graph _source _sink in
+  let labeled_graph =
+    gmap flow_cost_graph (fun lbl ->
+        Printf.sprintf "%d/%d (%d)" lbl.flow lbl.capacity lbl.cost)
+  in
+  let () =
+    export "out-bg.txt" labeled_graph;
+    Printf.printf "Output Busacker-Gowen graphviz to out-bg.txt\n"
   in
   ()
