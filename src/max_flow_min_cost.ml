@@ -12,29 +12,27 @@ let get_max_flow_increase gap_path =
 
 (* adds flow to arc, or return arc.
    @raises Graph_error if nor the forward nor return arc exist *)
-(* TODO refactor using a tuple for readiblity and add a comment about assuming the compiler won't always evaluate the second call *)
 let add_arc_flow gr src tgt n =
-  match find_arc gr src tgt with
-  | Some forward_arc ->
+  (* PERF: assumes compiler won't evaluate the second find when first is Some. *)
+  match (find_arc gr src tgt, find_arc gr tgt src) with
+  | Some forward_arc, _ ->
       new_arc gr
         {
           forward_arc with
           lbl = { forward_arc.lbl with flow = forward_arc.lbl.flow + n };
         }
   (* can't find forward arc, look for return arc *)
-  | None -> (
-      match find_arc gr tgt src with
-      | None ->
-          raise
-            (Graph_error
-               ("Couldn't find an arc between " ^ string_of_int src ^ " and "
-              ^ string_of_int tgt))
-      | Some return_arc ->
-          new_arc gr
-            {
-              return_arc with
-              lbl = { return_arc.lbl with flow = return_arc.lbl.flow + n };
-            })
+  | None, Some return_arc ->
+      new_arc gr
+        {
+          return_arc with
+          lbl = { return_arc.lbl with flow = return_arc.lbl.flow + n };
+        }
+  | None, None ->
+      raise
+        (Graph_error
+           ("Couldn't find an arc between " ^ string_of_int src ^ " and "
+          ^ string_of_int tgt))
 
 (* TODO possibly can remove the helper func *)
 let busacker_gowen input_graph _src _tgt =
