@@ -60,37 +60,41 @@ let () =
     Printf.printf "\n"
   in
 
-
-
-
   (*Djistra test *)
   let () = export outfile graph in
   let () =
     Printf.printf "Dijkstra result:\n";
     let min_path = dijkstra int_graph _source _sink in
     match min_path with
-     | None -> Printf.printf "No path form Dijkstra"
-     | Some path ->
-            let rec print_arcs (arcs: int arc list) = match arcs with
-                |[]->()
-                | a::b -> Printf.printf "%d--(%d)-->%d | " a.src a.lbl a.tgt; print_arcs b
-               in
-               print_arcs path
-       in
+    | None -> Printf.printf "No path form Dijkstra"
+    | Some path ->
+        let rec print_arcs (arcs : int arc list) =
+          match arcs with
+          | [] -> ()
+          | a :: b ->
+              Printf.printf "%d--(%d)-->%d | " a.src a.lbl a.tgt;
+              print_arcs b
+        in
+        print_arcs path
+  in
 
-    let () =
-        Printf.printf "\nBellmandford result:\n";
-        let flow_graph = gmap int_graph (fun x -> (init_flow_arc_lbl 0 0 x)) in
-        let min_path = bellmanford flow_graph _source _sink in
-        match min_path with
-         | None -> Printf.printf "No path form Bellman"
-         | Some path ->
-                let rec print_arcs (arcs: int arc list) = match arcs with
-                    |[]->()
-                    | a::b -> Printf.printf "%d--(%d)-->%d | " a.src a.lbl a.tgt; print_arcs b
-                   in
-                   print_arcs path; Printf.printf "\n"
-           in
+  let () =
+    Printf.printf "\nBellmandford result:\n";
+    let flow_graph = gmap int_graph (fun x -> { capacity = x; cost = 0; flow = 0}) in
+    let min_path = bellmanford flow_graph _source _sink in
+    match min_path with
+    | None -> Printf.printf "No path form Bellman"
+    | Some path ->
+        let rec print_arcs (arcs : flow_cost_arc_lbl arc list) =
+          match arcs with
+          | [] -> ()
+          | a :: b ->
+              Printf.printf "%d--(%d)-->%d | " a.src a.lbl.flow a.tgt;
+              print_arcs b
+        in
+        print_arcs path;
+        Printf.printf "\n"
+  in
 
   (* Ford-Fulkerson *)
   let flow_graph = ford_fulkerson int_graph _source _sink in
