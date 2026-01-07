@@ -1,6 +1,7 @@
 open Graph
+open Bellmanford
 
-type flow_cost_arc_lbl = { capacity : int; flow : int; cost : int }
+(* type flow_cost_arc_lbl = { capacity : int; flow : int; cost : int } *)
 (* TODO use above type in PCC algo, and rebuild at end once (instead of every time) *)
 
 (* `get_min_flow_increase path` calculates the minimum possible flow increase along this `path`. *)

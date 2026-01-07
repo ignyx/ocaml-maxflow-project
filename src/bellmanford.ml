@@ -1,11 +1,6 @@
 open Graph
 
-(* Label d’arc pour un graphe “de flot”.
-   Ici Bellman-Ford n’utilise que cost (capacity/flow sont ignorés). *)
-type flow_arc_lbl = { capacity:int; flow:int; cost:int }
-
-(* helper de construction de label (optionnel) *)
-let init_flow_arc_lbl cap flw cst = { capacity = cap; flow = flw; cost = cst }
+type flow_cost_arc_lbl = { capacity : int; flow : int; cost : int }
 
 (* bellmanford : calcule un plus court chemin de src vers dst en utilisant lbl.cost comme poids.
    Retour :
@@ -14,7 +9,7 @@ let init_flow_arc_lbl cap flw cst = { capacity = cap; flow = flw; cost = cst }
    Exceptions :
    - Graph_error si src/dst n’existent pas
    - Graph_error "Negative cycle" si un cycle négatif atteignable est détecté *)
-let bellmanford (gr : flow_arc_lbl graph) (src : id) (dst : id) : int arc list option =
+let bellmanford (gr : flow_cost_arc_lbl graph) (src : id) (dst : id) : flow_cost_arc_lbl arc list option =
   (* Vérifie que src et dst existent *)
   if not (node_exists gr src) || not (node_exists gr dst) then
     raise (Graph_error "bellmanford: src/dst inconnu")
@@ -37,7 +32,7 @@ let bellmanford (gr : flow_arc_lbl graph) (src : id) (dst : id) : int arc list o
 
     (* Relaxation d’un arc a : si dist[src] est connu et améliore dist[tgt],
        on met à jour dist[tgt] et pred[tgt]. *)
-    let relax (a : flow_arc_lbl arc) =
+    let relax (a : flow_cost_arc_lbl arc) =
       match Hashtbl.find_opt dist a.src with
       | Some (Some du) ->
           let nd = du + a.lbl.cost in
@@ -87,7 +82,7 @@ let bellmanford (gr : flow_arc_lbl graph) (src : id) (dst : id) : int arc list o
             match Hashtbl.find_opt pred v with
             | Some (Some a) ->
                 (* Comme on remonte, on préfixe l’arc ; acc est donc déjà dans le bon ordre final *)
-                build a.src ({ src=a.src; tgt=a.tgt; lbl=a.lbl.cost } :: acc)
+                build a.src (a :: acc)
             | _ -> None (* incohérence : dst annoncé atteignable mais pas de prédécesseur *)
         in
         build dst []

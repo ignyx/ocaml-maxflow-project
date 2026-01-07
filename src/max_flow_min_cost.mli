@@ -1,6 +1,5 @@
 open Graph
-
-type flow_cost_arc_lbl = { capacity : int; flow : int; cost : int }
+open Bellmanford
 
 (* `busacker_gowen gr src tgt` applies the Busacker-Gowen algorithm (using
    Bellman-Ford as a path-finding algorithm) to the capacity graph gr from node
