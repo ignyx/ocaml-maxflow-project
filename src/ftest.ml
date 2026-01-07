@@ -47,12 +47,12 @@ let () =
 
   let shortest_path = dfs graph [] _source _sink in
   let display (path: 'a arc list option) = match path with
-    | None -> Printf.printf "no path found"
+    | None -> Printf.printf "no path found\n"
     | Some arcs ->
         let rec aux (arcs: 'a arc list) = match arcs with
             | [] -> ()
             | h::t -> Printf.printf "%d--(%s)-->%d/" h.src h.lbl h.tgt; aux t
-        in aux arcs
+        in aux arcs; Printf.printf "\n"
   in 
   let () = display shortest_path in
 
@@ -85,6 +85,6 @@ let () =
                     |[]->()
                     | a::b -> Printf.printf "%d--(%d)-->%d | " a.src a.lbl a.tgt; print_arcs b
                    in
-                   print_arcs path
+                   print_arcs path; Printf.printf "\n"
            in
   ()
