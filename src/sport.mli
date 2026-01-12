@@ -28,5 +28,6 @@ val make_student : string -> choice list -> student
 val make_sport : int -> string -> int -> make
 val make_choice : int -> int -> choice
 
-val build_sport_solver_graph : student list -> sport list -> 'a graph
+val build_sport_solver_graph : student list -> sport list -> flow_arc_label graph
+val make_groups : student list -> sport list -> sport_group list
 
