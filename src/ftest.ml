@@ -7,6 +7,18 @@ open Bellmanford
 open Max_flow
 open Max_flow_min_cost
 
+(* Prints arc list to stdout *)
+let rec print_path string_of_label = function
+  | [] -> ()
+  | arc :: tail ->
+    Printf.printf "%d--(%s)-->%d/" arc.src (string_of_label arc.lbl) arc.tgt;
+    print_path string_of_label tail
+
+(* Prints arc list option to stdout *)
+let print_path_opt string_of_label = function
+    | None -> Printf.printf "None"
+    | Some arcs -> print_path string_of_label arcs
+
 let () =
   (* Check the number of command-line arguments *)
   if Array.length Sys.argv <> 5 then (
@@ -26,74 +38,37 @@ let () =
   (* These command-line arguments are not used for the moment. *)
   and _source = int_of_string Sys.argv.(2)
   and _sink = int_of_string Sys.argv.(3) in
+  (* TODO rename the above *)
 
   (* Open file *)
   let graph = from_file infile in
   let int_graph = gmap graph int_of_string in
 
-  (* Apply changes *)
-  let modified_graph = add_arc int_graph 0 5 3 in
+  let () = Printf.printf "Looking paths from %d to %d in the graph from %s\n" _source _sink infile in
 
-  (* Rewrite the graph that has been read. *)
-  let output_string_graph = gmap modified_graph string_of_int in
-  let () = write_file outfile output_string_graph in
-
-  let () = export "out.txt" graph in
-
-  (*Dfs TESTS*)
-  let shortest_path = dfs graph [] _source _sink in
-  let display (path : 'a arc list option) =
-    match path with
-    | None -> Printf.printf "no path found\n"
-    | Some arcs ->
-        let rec aux (arcs : 'a arc list) =
-          match arcs with
-          | [] -> ()
-          | h :: t ->
-              Printf.printf "%d--(%s)-->%d/" h.src h.lbl h.tgt;
-              aux t
-        in
-        aux arcs
-  in
+  (* Dfs TESTS *)
+  let dfs_path = dfs int_graph [] _source _sink in
   let () =
-    display shortest_path;
+    Printf.printf "Path using DFS                   : ";
+    print_path_opt string_of_int dfs_path;
     Printf.printf "\n"
   in
 
-  (*Djistra test *)
-  let () = export outfile graph in
+  (* Djistra test *)
+  let dijkstra_path = dijkstra int_graph _source _sink in
   let () =
-    Printf.printf "Dijkstra result:\n";
-    let min_path = dijkstra int_graph _source _sink in
-    match min_path with
-    | None -> Printf.printf "No path form Dijkstra"
-    | Some path ->
-        let rec print_arcs (arcs : int arc list) =
-          match arcs with
-          | [] -> ()
-          | a :: b ->
-              Printf.printf "%d--(%d)-->%d | " a.src a.lbl a.tgt;
-              print_arcs b
-        in
-        print_arcs path
+    Printf.printf "Shortest path using Dijkstra     : ";
+    print_path_opt string_of_int dijkstra_path;
+    Printf.printf "\n"
   in
 
+  (* Bellman-Ford test *)
+  let flow_graph = gmap int_graph (fun x -> { capacity = x; cost = x; flow = 1 }) in
+  let bellmanford_path = bellmanford flow_graph _source _sink in
   let () =
-    Printf.printf "\nBellmandford result:\n";
-    let flow_graph = gmap int_graph (fun x -> { capacity = x; cost = 0; flow = 0}) in
-    let min_path = bellmanford flow_graph _source _sink in
-    match min_path with
-    | None -> Printf.printf "No path form Bellman"
-    | Some path ->
-        let rec print_arcs (arcs : flow_cost_arc_lbl arc list) =
-          match arcs with
-          | [] -> ()
-          | a :: b ->
-              Printf.printf "%d--(%d)-->%d | " a.src a.lbl.flow a.tgt;
-              print_arcs b
-        in
-        print_arcs path;
-        Printf.printf "\n"
+    Printf.printf "Shortest path using Bellman-Ford : ";
+    print_path_opt (fun lbl -> string_of_int lbl.cost) bellmanford_path;
+    Printf.printf "\n"
   in
 
   (* Ford-Fulkerson *)
@@ -116,7 +91,8 @@ let () =
         Printf.sprintf "%d/%d (%d)" lbl.flow lbl.capacity lbl.cost)
   in
   let () =
+    export outfile labeled_graph;
     export "out-bg.txt" labeled_graph;
-    Printf.printf "Output Busacker-Gowen graphviz to out-bg.txt\n"
+    Printf.printf "Output Busacker-Gowen graphviz to out-bg.txt and %s\n" outfile
   in
   ()
