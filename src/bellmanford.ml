@@ -33,6 +33,7 @@ let bellmanford (gr : flow_cost_arc_lbl graph) (src : id) (dst : id) : flow_cost
     (* Relaxation d’un arc a : si dist[src] est connu et améliore dist[tgt],
        on met à jour dist[tgt] et pred[tgt]. *)
     let relax (a : flow_cost_arc_lbl arc) =
+      a.lbl.flow > 0 &&
       match Hashtbl.find_opt dist a.src with
       | Some (Some du) ->
           let nd = du + a.lbl.cost in
@@ -65,7 +66,7 @@ let bellmanford (gr : flow_cost_arc_lbl graph) (src : id) (dst : id) : flow_cost
     e_iter gr (fun a ->
       if not !neg then
         match Hashtbl.find_opt dist a.src, Hashtbl.find_opt dist a.tgt with
-        | Some (Some du), Some (Some dv) when du + a.lbl.cost < dv -> neg := true
+        | Some (Some du), Some (Some dv) when a.lbl.flow > 0 && du + a.lbl.cost < dv -> neg := true
         | _ -> ()
     );
     if !neg then raise (Graph_error "Negative cycle");
