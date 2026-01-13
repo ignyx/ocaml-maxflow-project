@@ -130,3 +130,18 @@ let flow_graph_to_group_lists db graph =
     (fun (sport : sport_class) ->
       { sport = sport.name; students_list = get_students_in_class sport.id })
     db.classes
+
+let node_id_to_name db = function
+  | 0 -> "source"
+  | 1 -> "puit"
+  | sport_id when sport_id >= 1_000_000 ->
+      (List.find
+         (fun (sport : sport_class) -> sport.id = sport_id - 1_000_000)
+         db.classes)
+        .name
+  | student_id when student_id >= 10_000 ->
+      (List.find
+         (fun (student : student) -> student.id = student_id - 10_000)
+         db.students)
+        .name
+  | x -> string_of_int x

@@ -112,9 +112,9 @@ let from_file path =
   close_in infile ;
   final_graph
 
-let export (p: path) (g: string graph) : unit =
+let export_str_node string_of_node (p: path) (g: string graph) : unit =
     let ff = open_out p in
-    let string_arc = e_fold g (fun acc arc -> acc^(Printf.sprintf "         %d -> %d [label = \"%s\"];\n" arc.src arc.tgt arc.lbl)) "" in
+    let string_arc = e_fold g (fun acc arc -> acc^(Printf.sprintf "         %s -> %s [label = \"%s\"];\n" (string_of_node arc.src) (string_of_node arc.tgt) arc.lbl)) "" in
     fprintf ff
     "digraph finite_state_machine {\n
         fontname=\"Helvetica,Arial,sans-serif\"
@@ -124,3 +124,5 @@ let export (p: path) (g: string graph) : unit =
         node [shape = circle];
         %s
      }" string_arc; close_out ff
+
+let export = export_str_node string_of_int

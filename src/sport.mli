@@ -31,3 +31,7 @@ type sport_group = { sport : string; students_list : string list }
 (* After solving the Flow Graph, retrieve the groups *)
 val flow_graph_to_group_lists :
   sports_db -> flow_cost_arc_lbl graph -> sport_group list
+
+(* Get a string placeholder instead of an id.
+    raises @Not_Found when the id doesn't correspond to anything in db. *)
+val node_id_to_name : sports_db -> id -> string

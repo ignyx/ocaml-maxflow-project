@@ -31,7 +31,7 @@ let () =
   in
   let groups = flow_graph_to_group_lists db solved_graph in
   let () =
-    export (outfile ^ ".graph") labeled_graph;
+    export_str_node (node_id_to_name db) (outfile ^ ".graph") labeled_graph;
     export_groups outfile groups;
     Printf.printf "Output graphviz to %s.graph\n" outfile;
     Printf.printf "Output group listings to %s\n%!" outfile
