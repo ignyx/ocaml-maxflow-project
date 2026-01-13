@@ -25,3 +25,9 @@ val new_wish : sports_db -> int -> int -> int -> sports_db
 
 (* Converts the sport_db to a Flow Graph to solve *)
 val build_sport_solver_graph : sports_db -> flow_cost_arc_lbl graph
+
+type sport_group = { sport : string; students_list : string list }
+
+(* After solving the Flow Graph, retrieve the groups *)
+val flow_graph_to_group_lists :
+  sports_db -> flow_cost_arc_lbl graph -> sport_group list

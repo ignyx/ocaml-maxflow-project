@@ -18,7 +18,7 @@ type sports_db = {
   wishes : wish list;
 }
 
-(* type sport_group = { sport : sport_class; students_list : student list } *)
+type sport_group = { sport : string; students_list : string list }
 
 let empty_db = { classes = []; students = []; wishes = [] }
 
@@ -113,3 +113,20 @@ let build_sport_solver_graph db =
           lbl = { capacity = 1; flow = 0; cost = w.priority };
         })
     g4 db.wishes
+
+let flow_graph_to_group_lists db graph =
+  let student_name_in_class sport_id student =
+    if
+      List.exists
+        (fun arc -> arc.tgt = sport_node sport_id && arc.lbl.flow = 1)
+        (out_arcs graph (student_node student.id))
+    then Some student.name
+    else None
+  in
+  let get_students_in_class sport_id =
+    List.filter_map (student_name_in_class sport_id) db.students
+  in
+  List.map
+    (fun (sport : sport_class) ->
+      { sport = sport.name; students_list = get_students_in_class sport.id })
+    db.classes
