@@ -1,0 +1,20 @@
+% This is a comment
+
+% Sports classes with an id, max size, and name.
+c 1 20 Badminton
+c 2 15 Judo
+
+% Students with an id, and name
+s 1 Alice
+s 2 Bob
+
+% Wishes. Each student gets multiple wishes.
+% w <student id> <sport ID> <ranking>
+% Alice's first choice (Judo)
+w 1 2 1
+% Alice's second choice (Badminton)
+w 1 1 2
+% Bob's first choice (Badminton)
+w 2 1 1
+% Bob's second choice (Judo)
+w 2 2 2

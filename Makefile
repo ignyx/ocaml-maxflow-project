@@ -3,7 +3,7 @@
 src?=0
 dst?=5
 graph?=graph1.txt
-sports_set?=set1.txt
+sports_set?=set3.txt
 
 all: build
 
@@ -26,7 +26,8 @@ demo: build
 	@cat outfile
 
 demosport: build
-	@echo TODO cat input file
+	@echo "\n   📜  INPUT DATA (content of infile)  📜\n"
+	@cat sports/${sports_set}
 	@echo "\n   ⚡  EXECUTING  ⚡\n"
 	./fsport.exe sports/${sports_set} outfile-sport
 	@echo "\n   🥁  RESULT (content of outfile)  🥁\n"
