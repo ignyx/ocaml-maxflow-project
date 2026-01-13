@@ -88,3 +88,16 @@ let from_sports_file path =
 
   close_in infile;
   final_db
+
+let export_groups (p : path) (groups : sport_group list) =
+  let join_names names =
+    List.fold_left (fun acu name -> acu ^ "\n" ^ name) "" names
+  in
+  let string_of_group group =
+    Printf.sprintf "# %s\n%s\n\n" group.sport (join_names group.students_list)
+  in
+  let group_strings = List.map string_of_group groups in
+  let content = List.fold_left ( ^ ) "" group_strings in
+  let ff = open_out p in
+  Printf.fprintf ff "%s" content;
+  close_out ff

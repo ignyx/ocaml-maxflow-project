@@ -25,12 +25,15 @@ let () =
 
   (* Solve for max flow min cost *)
   let solved_graph = busacker_gowen initial_graph 0 1 in
-  let initial_labeled_graph =
+  let labeled_graph =
     gmap solved_graph (fun lbl ->
         Printf.sprintf "%d/%d (%d)" lbl.flow lbl.capacity lbl.cost)
   in
+  let groups = flow_graph_to_group_lists db solved_graph in
   let () =
-    export outfile initial_labeled_graph
-    (* Printf.printf "Output Busacker-Gowen graphviz to out-bg.txt and %s\n" outfile *)
+    export (outfile ^ ".graph") labeled_graph;
+    export_groups outfile groups;
+    Printf.printf "Output graphviz to %s.graph\n" outfile;
+    Printf.printf "Output group listings to %s\n%!" outfile
   in
   ()
