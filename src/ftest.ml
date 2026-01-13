@@ -108,7 +108,6 @@ let () =
 
   (* Busacker-Gowen *)
   let input_graph =
-    (* TODO use a smarter input *)
     gmap int_graph (fun i -> { capacity = i; flow = 0; cost = i })
   in
   let flow_cost_graph = busacker_gowen input_graph _source _sink in

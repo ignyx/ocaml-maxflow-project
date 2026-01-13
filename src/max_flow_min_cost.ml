@@ -2,9 +2,6 @@ open Graph
 open Tools
 open Bellmanford
 
-(* type flow_cost_arc_lbl = { capacity : int; flow : int; cost : int } *)
-(* TODO use above type in PCC algo, and rebuild at end once (instead of every time) *)
-
 (* `get_min_flow_increase path` calculates the minimum possible flow increase along this `path`. *)
 let get_max_flow_increase gap_path =
   let gaps = List.map (fun arc -> arc.lbl.flow) gap_path in
@@ -26,7 +23,7 @@ let add_arc_flow gr src tgt n =
              ("Couldn't find a forward arc between " ^ string_of_int src
             ^ " and " ^ string_of_int tgt))
   in
-  (* Update forward arc with increase flow *)
+  (* Update forward arc with increased flow *)
   let gr1 =
     new_arc gr
       {
