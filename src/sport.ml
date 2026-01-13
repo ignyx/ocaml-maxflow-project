@@ -1,79 +1,115 @@
 open Graph
+open Bellmanford
 
-let make_student (name : string) (wishes : choice list) : student =
-    {name = name; wishes = wishes }
+exception Sport_error of string
 
-let make_sport (id : int) (string) (name: string) (capacity : int)=
-    {
-    id = id;
-    name = name ;
-    capacity = capacity;
-    }
+type sport_class = { id : int; capacity : int; name : string }
+type student = { id : int; name : string }
 
-let make_choice (sport_id : int) (priority: int) : choice =
-    {
-    sport_id = sport_id;
-    priority = priority;
-    }
+type wish = {
+  student_id : int;
+  sport_id : int;
+  priority : int; (* Higher preference is lower. Must be >= 0 *)
+}
 
-let make_student id name wishes : student = { id; name; wishes }
-let make_sport id name nb_max_student : sport = { id; name; nb_max_student }
-let make_choice sport_id priority : choice = { sport_id; priority }
+type sports_db = {
+  classes : sport_class list;
+  students : student list;
+  wishes : wish list;
+}
+
+(* type sport_group = { sport : sport_class; students_list : student list } *)
+
+let empty_db = { classes = []; students = []; wishes = [] }
+
+let class_exists db id =
+  List.exists (fun (cl : sport_class) -> cl.id = id) db.classes
+
+let new_class db id capacity name =
+  if class_exists db id then
+    raise
+      (Sport_error ("class with id " ^ string_of_int id ^ " already exists."))
+  else { db with classes = { id; name; capacity } :: db.classes }
+
+let student_exists db id = List.exists (fun cl -> cl.id = id) db.students
+
+let new_student db id name =
+  if student_exists db id then
+    raise
+      (Sport_error ("student with id " ^ string_of_int id ^ " already exists."))
+  else { db with students = { id; name } :: db.students }
+
+let new_wish db student_id sport_id priority =
+  match (student_exists db student_id, class_exists db sport_id) with
+  | false, _ ->
+      raise
+        (Sport_error
+           ("student with id " ^ string_of_int student_id ^ " doesn't exists."))
+  | _, false ->
+      raise
+        (Sport_error
+           ("class with id " ^ string_of_int sport_id ^ " doesn't exists."))
+  | true, true ->
+      { db with wishes = { student_id; sport_id; priority } :: db.wishes }
 
 (* IDs reservés *)
-let source_id = 1
-let sink_id   = 0
+let source_id = 0
+let sink_id = 1
 
 (* Encodage pour éviter collisions student/sport *)
-let student_node (sid:int) = 10_000 + sid
-let sport_node   (spid:int) = 1_000_000 + spid
+let student_node (sid : int) = 10_000 + sid
+let sport_node (spid : int) = 1_000_000 + spid
+(* let arc_lbl ?(cost = 0) capacity : flow_arc_lbl = { capacity; flow = 0; cost } *)
 
-let arc_lbl ?(cost=0) capacity : flow_arc_lbl =
-  { capacity; flow = 0; cost }
-
-let build_sport_solver_graph (students:student list) (sports:sport list)
-  : flow_arc_lbl graph =
-  let g0 = empty_graph |> new_node sink_id |> new_node source_id in
+let build_sport_solver_graph db =
+  (* Add source and sink nodes *)
+  let g0 = new_node (new_node empty_graph sink_id) source_id in
 
   (* Ajout des sommets students *)
   let g1 =
-    List.fold_left
-      (fun g s -> new_node g (student_node s.id))
-      g0 students
+    List.fold_left (fun g s -> new_node g (student_node s.id)) g0 db.students
   in
 
   (* Ajout des sommets sports *)
   let g2 =
     List.fold_left
-      (fun g sp -> new_node g (sport_node sp.id))
-      g1 sports
+      (fun g (sp : sport_class) -> new_node g (sport_node sp.id))
+      g1 db.classes
   in
 
   (* Source -> chaque student (capacité 1) *)
   let g3 =
     List.fold_left
       (fun g s ->
-         new_arc g { src = source_id; tgt = student_node s.id; lbl = arc_lbl 1 })
-      g2 students
+        new_arc g
+          {
+            src = source_id;
+            tgt = student_node s.id;
+            lbl = { capacity = 1; flow = 0; cost = 0 };
+          })
+      g2 db.students
   in
 
   (* Chaque sport -> puits (capacité nb_max_student) *)
   let g4 =
     List.fold_left
-      (fun g sp ->
-         new_arc g { src = sport_node sp.id; tgt = sink_id; lbl = arc_lbl sp.nb_max_student })
-      g3 sports
+      (fun g (sp : sport_class) ->
+        new_arc g
+          {
+            src = sport_node sp.id;
+            tgt = sink_id;
+            lbl = { capacity = sp.capacity; flow = 0; cost = 0 };
+          })
+      g3 db.classes
   in
 
   (* Student -> sport si souhait, coût = priorité *)
   List.fold_left
-    (fun g s ->
-       List.fold_left
-         (fun g ch ->
-            new_arc g {
-              src = student_node s.id;
-              tgt = sport_node ch.sport_id;
-              lbl = arc_lbl ~cost:ch.priority 1
-            })
-         g s.wishes)
-    g4 student
+    (fun g w ->
+      new_arc g
+        {
+          src = student_node w.student_id;
+          tgt = sport_node w.sport_id;
+          lbl = { capacity = 1; flow = 0; cost = w.priority };
+        })
+    g4 db.wishes

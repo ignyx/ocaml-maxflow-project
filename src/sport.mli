@@ -1,33 +1,27 @@
+open Bellmanford
 open Graph
 
-type choice = {
-    sport_id : int;
-    priority : int;
-}
+exception Sport_error of string
 
-type student = {
-    id : int;
-    name : string;
-    wishes : choice list;
-}
+(* Stores the data prior conversion to graph *)
+type sports_db
 
-type sport = {
-    id : int;
-    name : string;
-    capacity : int;
-    nb_max_student : int;
-}
+(* Empty database, without any classes, students or wishes *)
+val empty_db : sports_db
 
-type sport_group = {
-    sport : sport;
-    students_list : student_list
-}
+(* `new_class id capacity name` adds a class to which at most `capacity` students
+   will be assigned.
+   raise @Sport_error if id already exists *)
+val new_class : sports_db -> int -> int -> string -> sports_db
 
-(* builders *)
-val make_student : string -> choice list -> student
-val make_sport : int -> string -> int -> make
-val make_choice : int -> int -> choice
+(* `new_student id name` adds a student.
+   raise @Sport_error if id already exists *)
+val new_student : sports_db -> int -> string -> sports_db
 
-val build_sport_solver_graph : student list -> sport list -> flow_arc_label graph
-val make_groups : student list -> sport list -> sport_group list
+(* `new_wish student_id sport_id priority` adds wish for a student.
+   Priority 1 means this class is the student's top choice, while 2 means second choice.
+   raise @Sport_error if student or class doesn't exist. *)
+val new_wish : sports_db -> int -> int -> int -> sports_db
 
+(* Converts the sport_db to a Flow Graph to solve *)
+val build_sport_solver_graph : sports_db -> flow_cost_arc_lbl graph
