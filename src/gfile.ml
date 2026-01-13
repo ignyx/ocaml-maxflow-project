@@ -123,4 +123,4 @@ let export (p: path) (g: string graph) : unit =
         rankdir=LR;
         node [shape = circle];
         %s
-     }" string_arc
+     }" string_arc; close_out ff
