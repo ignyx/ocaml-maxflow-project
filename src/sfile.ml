@@ -72,7 +72,7 @@ let from_sports_file path =
         (* Ignore empty lines *)
         if line = "" then graph
         (* The first character of a line determines its content : n or e. *)
-          else
+        else
           match line.[0] with
           | 'c' -> read_class graph line
           | 's' -> read_student graph line

@@ -16,8 +16,8 @@ let rec print_path string_of_label = function
 
 (* Prints arc list option to stdout *)
 let print_path_opt string_of_label = function
-    | None -> Printf.printf "None"
-    | Some arcs -> print_path string_of_label arcs
+  | None -> Printf.printf "None"
+  | Some arcs -> print_path string_of_label arcs
 
 let () =
   (* Check the number of command-line arguments *)
@@ -25,10 +25,10 @@ let () =
     Printf.printf "\n ✻  Usage: %s infile source sink outfile\n\n%s%!"
       Sys.argv.(0)
       ("    🟄  infile  : input file containing a graph\n"
-     ^ "    🟄  source  : identifier of the source vertex (used by the \
-        ford-fulkerson algorithm)\n"
-     ^ "    🟄  sink    : identifier of the sink vertex (ditto)\n"
-     ^ "    🟄  outfile : output file in which the result should be written.\n\n"
+       ^ "    🟄  source  : identifier of the source vertex (used by the \
+          ford-fulkerson algorithm)\n"
+       ^ "    🟄  sink    : identifier of the sink vertex (ditto)\n"
+       ^ "    🟄  outfile : output file in which the result should be written.\n\n"
       );
     exit 0);
 

@@ -42,15 +42,15 @@ let new_student db id name =
 let new_wish db student_id sport_id priority =
   match (student_exists db student_id, class_exists db sport_id) with
   | false, _ ->
-      raise
-        (Sport_error
-           ("student with id " ^ string_of_int student_id ^ " doesn't exists."))
+    raise
+      (Sport_error
+         ("student with id " ^ string_of_int student_id ^ " doesn't exists."))
   | _, false ->
-      raise
-        (Sport_error
-           ("class with id " ^ string_of_int sport_id ^ " doesn't exists."))
+    raise
+      (Sport_error
+         ("class with id " ^ string_of_int sport_id ^ " doesn't exists."))
   | true, true ->
-      { db with wishes = { student_id; sport_id; priority } :: db.wishes }
+    { db with wishes = { student_id; sport_id; priority } :: db.wishes }
 
 (* IDs reservés *)
 let source_id = 0
@@ -81,12 +81,12 @@ let build_sport_solver_graph db =
   let g3 =
     List.fold_left
       (fun g s ->
-        new_arc g
-          {
-            src = source_id;
-            tgt = student_node s.id;
-            lbl = { capacity = 1; flow = 0; cost = 0 };
-          })
+         new_arc g
+           {
+             src = source_id;
+             tgt = student_node s.id;
+             lbl = { capacity = 1; flow = 0; cost = 0 };
+           })
       g2 db.students
   in
 
@@ -94,24 +94,24 @@ let build_sport_solver_graph db =
   let g4 =
     List.fold_left
       (fun g (sp : sport_class) ->
-        new_arc g
-          {
-            src = sport_node sp.id;
-            tgt = sink_id;
-            lbl = { capacity = sp.capacity; flow = 0; cost = 0 };
-          })
+         new_arc g
+           {
+             src = sport_node sp.id;
+             tgt = sink_id;
+             lbl = { capacity = sp.capacity; flow = 0; cost = 0 };
+           })
       g3 db.classes
   in
 
   (* Student -> sport si souhait, coût = priorité *)
   List.fold_left
     (fun g w ->
-      new_arc g
-        {
-          src = student_node w.student_id;
-          tgt = sport_node w.sport_id;
-          lbl = { capacity = 1; flow = 0; cost = w.priority };
-        })
+       new_arc g
+         {
+           src = student_node w.student_id;
+           tgt = sport_node w.sport_id;
+           lbl = { capacity = 1; flow = 0; cost = w.priority };
+         })
     g4 db.wishes
 
 let flow_graph_to_group_lists db graph =
@@ -128,20 +128,20 @@ let flow_graph_to_group_lists db graph =
   in
   List.map
     (fun (sport : sport_class) ->
-      { sport = sport.name; students_list = get_students_in_class sport.id })
+       { sport = sport.name; students_list = get_students_in_class sport.id })
     db.classes
 
 let node_id_to_name db = function
   | 0 -> "source"
   | 1 -> "puit"
   | sport_id when sport_id >= 1_000_000 ->
-      (List.find
-         (fun (sport : sport_class) -> sport.id = sport_id - 1_000_000)
-         db.classes)
-        .name
+    (List.find
+       (fun (sport : sport_class) -> sport.id = sport_id - 1_000_000)
+       db.classes)
+    .name
   | student_id when student_id >= 10_000 ->
-      (List.find
-         (fun (student : student) -> student.id = student_id - 10_000)
-         db.students)
-        .name
+    (List.find
+       (fun (student : student) -> student.id = student_id - 10_000)
+       db.students)
+    .name
   | x -> string_of_int x

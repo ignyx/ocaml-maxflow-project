@@ -10,8 +10,8 @@ let () =
   if Array.length Sys.argv <> 3 then (
     Printf.printf "\n ✻  Usage: %s infile outfile\n\n%s%!" Sys.argv.(0)
       ("    🟄  infile  : input file containing the student choices.\n"
-     ^ "    🟄  outfile : output file in which the result attributions should \
-        be written.\n\n");
+       ^ "    🟄  outfile : output file in which the result attributions should \
+          be written.\n\n");
     exit 0);
 
   (* Arguments are : infile(1) source-id(2) sink-id(3) outfile(4) *)

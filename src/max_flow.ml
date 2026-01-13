@@ -11,7 +11,7 @@ let get_max_flow_increase gap_path =
   List.fold_left min initial gaps
 
 (* Builds the flow graph, with a label containing both the capacity and flow, useful for display.
-  It supports capacity graphs with both a forward and a return arc between two nodes. *)
+   It supports capacity graphs with both a forward and a return arc between two nodes. *)
 let gap_to_flow_graph capacity_gr gap_gr =
   let join flow_gr_acu capacity_arc =
     (* flow along the return arc, if any *)
@@ -42,17 +42,17 @@ let ford_fulkerson capacity_gr src tgt =
     match path with
     | None -> gap_graph
     | Some path ->
-        let flow_increase = get_max_flow_increase path in
-        let update_gaps graph1 arc =
-          (* decrease valuation along arc *)
-          let graph2 = add_arc graph1 arc.src arc.tgt (-flow_increase) in
-          (* increase valuation along return arc *)
-          add_arc graph2 arc.tgt arc.src flow_increase
-        in
-        let updated_capacity_graph =
-          List.fold_left update_gaps gap_graph path
-        in
-        apply_step updated_capacity_graph
+      let flow_increase = get_max_flow_increase path in
+      let update_gaps graph1 arc =
+        (* decrease valuation along arc *)
+        let graph2 = add_arc graph1 arc.src arc.tgt (-flow_increase) in
+        (* increase valuation along return arc *)
+        add_arc graph2 arc.tgt arc.src flow_increase
+      in
+      let updated_capacity_graph =
+        List.fold_left update_gaps gap_graph path
+      in
+      apply_step updated_capacity_graph
   in
   let final_gap_graph = apply_step capacity_gr in
   gap_to_flow_graph capacity_gr final_gap_graph

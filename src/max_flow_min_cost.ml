@@ -18,9 +18,9 @@ let add_arc_flow gr src tgt n =
     match find_arc gr src tgt with
     | Some forward_arc -> forward_arc
     | None ->
-        raise
-          (Graph_error
-             ("Couldn't find a forward arc between " ^ string_of_int src
+      raise
+        (Graph_error
+           ("Couldn't find a forward arc between " ^ string_of_int src
             ^ " and " ^ string_of_int tgt))
   in
   (* Update forward arc with increased flow *)
@@ -77,18 +77,18 @@ let busacker_gowen input_graph src tgt =
     | None | Some [] -> flow_gr
     (* Otherwise, update flows accordingly and repeat *)
     | Some path ->
-        let flow_increase = get_max_flow_increase path in
-        let add_flow acu gap_arc =
-          (* decrease valuation along forward arc *)
-          let graph1 =
-            add_arc_flow acu gap_arc.src gap_arc.tgt (-flow_increase)
-          in
-          (* increase valuation along return arc *)
-          graph1
-          (* add_arc_flow graph1 gap_arc.tgt gap_arc.src (-flow_increase) *)
+      let flow_increase = get_max_flow_increase path in
+      let add_flow acu gap_arc =
+        (* decrease valuation along forward arc *)
+        let graph1 =
+          add_arc_flow acu gap_arc.src gap_arc.tgt (-flow_increase)
         in
-        let updated_flow_gr = List.fold_left add_flow flow_gr path in
-        apply_step updated_flow_gr
+        (* increase valuation along return arc *)
+        graph1
+        (* add_arc_flow graph1 gap_arc.tgt gap_arc.src (-flow_increase) *)
+      in
+      let updated_flow_gr = List.fold_left add_flow flow_gr path in
+      apply_step updated_flow_gr
   in
   let final_gap_graph = apply_step initial_flow_gr in
   gap_to_flow_graph input_graph final_gap_graph
