@@ -17,6 +17,7 @@ Optionally replace `xdg-open` with `open` or your favorite image viewer.
 
 ```bash
 git clone https://github.com/ignyx/ocaml-maxflow-project.git
+cd ocaml-maxflow-project
 
 make demo graph=graph6.txt
 # See the paths found by the algos
