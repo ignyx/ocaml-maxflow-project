@@ -3,7 +3,7 @@
 src?=0
 dst?=5
 graph?=graph1.txt
-sports_set?=set3.txt
+sports_set?=set1.txt
 
 all: build
 
